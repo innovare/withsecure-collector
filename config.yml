@@ -1,0 +1,25 @@
+clients:
+  - name: "innovare"
+    organization_id: "437a1fb8-d6fb-45f9-bf84-d2c3b78898f3"  
+    client_id: "fusion_c0571d704aa344e8812009cd"
+    client_secret: "XEyNJrZnndQ95gjg0hvVO93vHJRJJS0K"    
+    scope: "connect.api.read"
+    token_url: "https://api.connect.withsecure.com/as/token.oauth2"
+    events_url: "https://api.connect.withsecure.com/events/v1/security-events"
+    interval: 15         # billing / SLA
+    output_log: "output/innovare.log"
+    state_file: "state/innovare.json"
+    customer_name: "Innovare e-Business"
+    rate_limit_per_minute: 30
+
+#  - name: "beagle"
+#    organization_id: "e1aa5ef3-f4b6-4620-b80c-627e1e3bfa91"
+#    client_id: "fusion_ccccdc3b193c4b35aedfa980"
+#    client_secret: "odaw3FYajLtuMtoUipC3asKTjv6Crypo"    
+#    scope: "connect.api.read"
+#    token_url: "https://api.connect.withsecure.com/as/token.oauth2"
+#    events_url: "https://api.connect.withsecure.com/events/v1/security-events"
+#    interval: 30          # billing / SLA
+#    output_log: "output/beagle.log"
+#    state_file: "state/beagle.json"
+#    customer_name: "Beagle"
