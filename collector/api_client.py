@@ -1,5 +1,5 @@
 # collector/api_client.py
-# VERSION: v1.1.12
+# VERSION: v1.3.0
 # FIX:
 # - Payload EXACTLY as WithSecure example
 # - Dict + list for engineGroup

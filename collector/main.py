@@ -1,5 +1,5 @@
 # collector/main.py
-# VERSION: v1.2.1
+# VERSION: v1.3.0
 #
 # CHANGELOG:
 # - Graceful shutdown (SIGINT / SIGTERM)
@@ -56,7 +56,7 @@ def utc_now_iso():
 # MAIN
 # --------------------------------------------------------------------
 def main():
-    log.info("Collector started (scheduler + graceful shutdown enabled)")
+    log.info("WithSecure Events Collector started")
 
     # ------------------------------------------------------------
     # Scheduler state (IN-MEMORY)
@@ -119,9 +119,8 @@ def main():
         # ========================================================
         name = next_client["name"]
         interval = next_client["interval"]
-        output_log = next_client["output_log"]
 
-        log.info("Processing client: %s", name)
+        log.info("Processing client: '%s'", name)
 
         # -----------------------------
         # Rate-limit per tenant
@@ -152,7 +151,7 @@ def main():
                 if not items:
                     break
 
-                save_events(output_log, items)
+                save_events(name, items)
 
                 for ev in items:
                     total_events += 1
@@ -169,7 +168,7 @@ def main():
                 sched[name]["rate_limit_until"] = now + interval
                 log.warning("Rate-limit detected for %s", name)
             else:
-                log.error("Client %s failed: %s", name, msg)
+                log.error("  - Client '%s' failed: %s", name, msg)
 
         # -----------------------------
         # SAVE STATE ALWAYS
@@ -185,7 +184,7 @@ def main():
         sched[name]["next_run"] = now + interval
 
         log.info(
-            "Client %s finished: events=%s pages=%s last_ts=%s",
+            "  - Polling for : %s finished. events=%s pages=%s last_ts=%s",
             name,
             total_events,
             page,
@@ -193,7 +192,7 @@ def main():
         )
 
         log.info(
-            "Next polling for %s in %s seconds",
+            "  - Next polling: %s in %s seconds.",
             name,
             interval
         )

@@ -1,5 +1,5 @@
 # collector/logger.py
-# VERSION: v1.2.0
+# VERSION: v1.3.0
 #
 # CHANGELOG:
 # - DEBUG siempre se guarda en log/withsecure-collector.log

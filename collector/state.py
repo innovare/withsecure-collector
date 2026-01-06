@@ -1,5 +1,5 @@
 # collector/state.py
-# VERSION: v1.1.8
+# VERSION: v1.3.0
 # CHANGELOG:
 # - Guarda correctamente anchor por cliente
 

@@ -1,9 +1,7 @@
 # collector/save_events.py
-# VERSION: v1.0.1
+# VERSION: v1.3.0
 #
 # CHANGELOG:
-# - Usa output_log definido por cliente en config.yml
-# - No asume estructura de carpetas
 # - Crea directorio si no existe
 # - Mantiene formato JSONL
 
@@ -14,10 +12,11 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def save_events(output_log: str, events: list):
+def save_events(output_name: str, events: list):
     """
     Guarda eventos en el archivo definido por cliente (JSONL).
     """
+    output_log = "events/" + output_name + '.log'
 
     if not events:
         return

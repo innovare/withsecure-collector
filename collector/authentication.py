@@ -1,5 +1,5 @@
 # collector/authentication.py
-# VERSION: v1.1.10
+# VERSION: v1.3.0
 # FIX:
 # - Restored correct Basic Auth header
 # - Base64(client_id:client_secret)
@@ -30,7 +30,7 @@ class WithSecureAuth:
             "Authorization": f"Basic {encoded}",
             "Content-Type": "application/x-www-form-urlencoded",
             "Accept": "application/json",
-            "User-Agent": "isiem-collector"
+            "User-Agent": "innovare-siem-collector"
         }
 
         data = {

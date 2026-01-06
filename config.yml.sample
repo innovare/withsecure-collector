@@ -1,0 +1,16 @@
+clients:
+  - name: "innovare"
+    organization_id: ""  
+    client_id: ""
+    client_secret: ""    
+    scope: "connect.api.read"
+    interval: 15
+    rate_limit_per_minute: 30
+
+  - name: "customer"
+    organization_id: ""
+    client_id: ""
+    client_secret: ""    
+    scope: "connect.api.read"
+    interval: 30
+    rate_limit_per_minute: 60 # (si no existe se asume 60 x minuto)

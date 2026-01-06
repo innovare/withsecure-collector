@@ -1,5 +1,5 @@
 # collector/config_loader.py
-# VERSION: v1.0.3
+# VERSION: v1.3.0
 #
 # CHANGELOG:
 # - Implementa hot-reload REAL usando mtime
@@ -33,7 +33,7 @@ def load_config():
     current_mtime = path.stat().st_mtime
 
     # ------------------------------------------------------------
-    # 🔴 HOT-RELOAD REAL (solo si el archivo cambió)
+    # HOT-RELOAD REAL (solo si el archivo cambió)
     # ------------------------------------------------------------
     if load_config._cache["mtime"] != current_mtime:
         with open(path, "r", encoding="utf-8") as f:
@@ -45,11 +45,11 @@ def load_config():
         required_fields = [
             "client_id",
             "client_secret",
-            "token_url",
-            "events_url",
+            #"token_url",
+            #"events_url",
             "interval",
-            "output_log",
-            "state_file"
+            #"output_log",
+            #"state_file"
         ]
 
         for idx, client in enumerate(config["clients"]):

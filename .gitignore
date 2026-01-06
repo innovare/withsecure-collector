@@ -3,4 +3,7 @@ state.json
 output/
 log/
 state/
+config.yml
+events/
+*.cfg
 __pycache__/
