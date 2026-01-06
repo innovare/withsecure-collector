@@ -2,7 +2,7 @@
 # VERSION: v1.3.0
 #
 # CHANGELOG:
-# - DEBUG siempre se guarda en log/withsecure-collector.log
+# - DEBUG siempre se guarda en logs/withsecure-collector.log
 # - Consola muestra INFO+ por defecto
 # - DEBUG en consola solo si DEBUG=1
 # - Mantiene filename en el LOG
@@ -12,7 +12,7 @@ import os
 import sys
 from pathlib import Path
 
-LOG_DIR = Path("log")
+LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
 
 LOG_FILE = LOG_DIR / "withsecure-collector.log"

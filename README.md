@@ -1,4 +1,7 @@
-# WithSecure Collector (Innovare SIEM)
+# WithSecure Events Collector
+
+Creado por INNOVARE para la recolección de eventos de WithSecure para la
+plataforma iSIEM
 
 Multi-tenant **WithSecure Security Events Collector** diseñado para entornos **SOC / SIEM empresariales**, con soporte para:
 - despliegue vía **RPM**
@@ -11,23 +14,23 @@ Multi-tenant **WithSecure Security Events Collector** diseñado para entornos **
 
 ---
 
-## 📌 Características principales
+## Características principales
 
-- ✅ Recolección de eventos desde **WithSecure Elements API**
-- ✅ Multi-cliente (multi-tenant)
-- ✅ Paginación automática (200 eventos por request)
-- ✅ Persistencia de estado por cliente
-- ✅ Intervalo configurable por cliente (base para billing)
-- ✅ Hot-reload de `config.yml` sin reiniciar el servicio
-- ✅ Rate-limit independiente por cliente
-- ✅ Graceful shutdown (SIGTERM)
-- ✅ Logs estructurados y compatibles con systemd
-- ✅ Empaquetado como **RPM firmado**
-- ✅ Listo para integración con SIEM (Wazuh / OpenSearch / Elastic)
+- Recolección de eventos desde **WithSecure Elements API**
+- Multi-cliente (multi-tenant)
+- Paginación automática (200 eventos por request)
+- Persistencia de estado por cliente
+- Intervalo configurable por cliente (base para billing)
+- Hot-reload de `config.yml` sin reiniciar el servicio
+- Rate-limit independiente por cliente
+- Graceful shutdown (SIGTERM)
+- Logs estructurados y compatibles con systemd
+- Empaquetado como **RPM firmado**
+- Listo para integración con SIEM (Wazuh / OpenSearch / Elastic)
 
 ---
 
-## 📂 Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 withsecure-collector/
@@ -44,3 +47,15 @@ withsecure-collector/
 ├── systemd/
 │   └── withsecure-collector.service
 └── README.md
+
+---
+
+## Descarga y Ejecución
+
+```text
+# mkdir /opt/innovare
+# cd /opt/innovare
+# git clone https://github.com/innovare/withsecure-collector.git
+# source venv/Scripts/activate
+# export DEBUG=1 # Sólo si se quiere hacer Debug y DEBUG=0 para desactivar
+# python3 -m collector.main
