@@ -69,6 +69,7 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         "persistenceTimestampStart": last_ts,
         "order": "asc",
         "exclusiveStart": "true",
+        "language": "es-MX",
     }
 
     if anchor:
