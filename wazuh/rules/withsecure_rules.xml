@@ -1,0 +1,160 @@
+<!-- ID: 77700 - 77750 -->
+
+<group name="withsecure,endpoint">
+
+<!--
+{"severity": "critical", "acknowledged": false, "serverTimestamp": "2026-01-06T21:37:08.357Z", "description": "Manual Scanning event", "persistenceTimestamp": "2
+
+Name of an engine which raised the event. 
+For example: [ applicationControl, browsingProtection, dataGuard, deviceControl, connectionControl, AMSI, firewall, 
+integrityChecker, fileScanning, manualScanning, reputationBasedBrowsing, webContentControl, tamperProtection, 
+webTrafficScanning, edr, emailScan, emailBreach teamsScan, oneDriveScan, sharePointScan ]
+
+-->
+    <rule id="77700" level="0">
+        <decoded_as>json</decoded_as>
+        <field name="vendor">WithSecure</field>
+        <description>WithSecure events.</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77701" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^applicationControl$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77702" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^browsingProtection$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77703" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^dataGuard$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77704" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^deviceControl$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77705" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^connectionControl$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77706" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^AMSI$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77707" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^firewall$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77708" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^integrityChecker$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77709" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^fileScanning$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77710" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^manualScanning$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77711" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^reputationBasedBrowsing$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77712" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^webContentControl$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77713" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^tamperProtection$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77714" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^webTrafficScanning$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77715" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^edr$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77716" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^emailScan$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77717" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^emailBreach teamsScan$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77718" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^oneDriveScan$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77719" level="3">
+        <if_sid>77700</if_sid>
+        <field name="engine">^sharePointScan$</field>
+        <description>WithSecure: $(message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77750" level="0">
+        <if_sid>11</if_sid>
+        <field name="vendor">WithSecure</field>
+        <description>Ignore volume anomaly for WithSecure logs</description>
+    </rule>
+</group>
+
