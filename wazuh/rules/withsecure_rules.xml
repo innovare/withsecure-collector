@@ -1,264 +1,271 @@
-<!-- ID: 77700 - 77750 -->
+<!-- ID: 7770 - 77750 -->
 
-<group name="withsecure,endpoint">
+<group name="withsecure,">
 
 <!--
-Lista con cada valor y su código asignado:	
+    Lista con cada valor del campo "engine" y código asignado:	
 
-Código	Engine
-==============
-777001	AMSI
-777002	activityMonitor
-777003	activityMonitorClientProtection
-777004	applicationControl
-777005	browsingProtection
-777006	cloudIdentityAzure
-777007	cloudWorkloadAzure
-777008	connectionControl
-777009	connector
-777010	dataGuard
-777011	deepGuard
-777012	deviceControl
-777013	edr
-777014	emailBreach
-777015	emailScan
-777016	fileScanning
-777017	firewall
-777018	inboxRuleScan
-777019	integrityChecker
-777020	oneDriveScan
-777021	product
-777022	realtimeScanning
-777023	reputationBasedBrowsing
-777024	setting
-777025	sharePointScan
-777026	systemEventsLog
-777027	tamperProtection
-777028	teamsScan
-777029	webContentControl
-777030	webTrafficScanning
-777031	xFence
-777032	xmRecommendation
+    Código	Engine
+    ==============
+    77701	AMSI
+    77702	activityMonitor
+    77703	activityMonitorClientProtection
+    77704	applicationControl
+    77705	browsingProtection
+    77706	cloudIdentityAzure
+    77707	cloudWorkloadAzure
+    77708	connectionControl
+    77709	connector
+    77710	dataGuard
+    77711	deepGuard
+    77712	deviceControl
+    77713	edr
+    77714	emailBreach
+    77715	emailScan
+    77716	fileScanning
+    77717	firewall
+    77718	inboxRuleScan
+    77719	integrityChecker
+    77720	oneDriveScan
+    77721	product
+    77722	realtimeScanning
+    77723	reputationBasedBrowsing
+    77724	setting
+    77725	sharePointScan
+    77726	systemEventsLog
+    77727	tamperProtection
+    77728	teamsScan
+    77729	webContentControl
+    77730	webTrafficScanning
+    77731	xFence
+    77732	xmRecommendation
 
 -->
-    <rule id="777001" level="3">
+    <rule id="77700" level="0">
+        <decoded_as>json</decoded_as>
+        <field name="vendor">WithSecure</field>
+        <description>WithSecure Elements events.</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77701" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^AMSI$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777002" level="3">
+    <rule id="77702" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^activityMonitor$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777003" level="3">
+    <rule id="77703" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^activityMonitorClientProtection$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777004" level="3">
+    <rule id="77704" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^applicationControl$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777005" level="3">
+    <rule id="77705" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^browsingProtection$</field>
         <description>WithSecure: $(message) $(data.details.url)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777006" level="3">
+    <rule id="77706" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^cloudIdentityAzure$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777007" level="3">
+    <rule id="77707" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^cloudWorkloadAzure$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777008" level="3">
+    <rule id="77708" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^connectionControl$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777009" level="3">
+    <rule id="77709" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^connector$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777010" level="3">
+    <rule id="77710" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^dataGuard$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777011" level="3">
+    <rule id="77711" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^deepGuard$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777012" level="3">
+    <rule id="77712" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^deviceControl$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777013" level="3">
+    <rule id="77713" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^edr$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777014" level="3">
+    <rule id="77714" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^emailBreach$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777015" level="3">
+    <rule id="77715" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^emailScan$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777016" level="3">
+    <rule id="77716" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^fileScanning$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777017" level="3">
+    <rule id="77717" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^firewall$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777018" level="3">
+    <rule id="77718" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^inboxRuleScan$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777019" level="3">
+    <rule id="77719" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^integrityChecker$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777020" level="3">
+    <rule id="77720" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^oneDriveScan$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777021" level="3">
+    <rule id="77721" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^product$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777022" level="3">
+    <rule id="77722" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^realtimeScanning$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777023" level="3">
+    <rule id="77723" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^reputationBasedBrowsing$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777024" level="3">
+    <rule id="77724" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^setting$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777025" level="3">
+    <rule id="77725" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^sharePointScan$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777026" level="3">
+    <rule id="77726" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^systemEventsLog$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777027" level="3">
+    <rule id="77727" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^tamperProtection$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777028" level="3">
+    <rule id="77728" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^teamsScan$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777029" level="3">
+    <rule id="77729" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^webContentControl$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777030" level="3">
+    <rule id="77730" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^webTrafficScanning$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777031" level="3">
+    <rule id="77731" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^xFence$</field>
         <description>WithSecure: $(message)</description>
         <options>no_full_log</options>
     </rule>
 
-    <rule id="777032" level="3">
+    <rule id="77732" level="3">
         <if_sid>77700</if_sid>
         <field name="engine">^xmRecommendation$</field>
         <description>WithSecure: $(message)</description>
