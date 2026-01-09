@@ -1,10 +1,10 @@
 # collector/api_client.py
-# VERSION: v1.3.4
+# VERSION: v1.3.5
 #
 # FIX:
-# - clientTimestamp y systemDataTimeCreated pueden venir como STRING epoch
-# - Se convierten correctamente a ISO 8601
-# - Sin alterar otros campos
+# - Renombra serverTimestamp -> timestamp
+# - Convierte details.clientTimestamp y details.systemDataTimeCreated (epoch -> ISO)
+# - Añade vendor="WithSecure"
 
 import logging
 import requests
@@ -96,7 +96,17 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
     for event in items:
         # Vendor
         event["vendor"] = "WithSecure"
+        
+        # --------------------------------------------------------------
+        # Rename serverTimestamp -> timestamp
+        # --------------------------------------------------------------
+        if "serverTimestamp" in event:
+            event["timestamp"] = event["serverTimestamp"]
+            del event["serverTimestamp"]
 
+        # --------------------------------------------------------------
+        # Convert specific details timestamps (epoch -> ISO)
+        # --------------------------------------------------------------
         details = event.get("details")
         if not isinstance(details, dict):
             continue
