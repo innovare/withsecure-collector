@@ -1,14 +1,22 @@
 # collector/api_client.py
-# VERSION: v1.3.5
+# VERSION: v1.3.7
 #
 # FIX:
 # - Renombra serverTimestamp -> timestamp
 # - Convierte details.clientTimestamp y details.systemDataTimeCreated (epoch -> ISO)
 # - Añade vendor="WithSecure"
+# - Normaliza details.categories
+# - Normaliza details.risk
+# - Externaliza normalización a collector.normalizers
 
 import logging
 import requests
 from datetime import datetime, timezone
+
+from collector.normalizers import (
+    normalize_categories,
+    normalize_risk
+)
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +33,6 @@ def _epoch_to_iso(value):
     Acepta int, float o string numérico.
     """
     try:
-        # Soportar epoch como string numérico
         if isinstance(value, str):
             if not value.isdigit():
                 return value
@@ -34,7 +41,6 @@ def _epoch_to_iso(value):
         if not isinstance(value, (int, float)):
             return value
 
-        # Milisegundos vs segundos
         if value > 1_000_000_000_000:
             dt = datetime.fromtimestamp(value / 1000, tz=timezone.utc)
         else:
@@ -96,22 +102,21 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
     for event in items:
         # Vendor
         event["vendor"] = "WithSecure"
-        
+
         # --------------------------------------------------------------
         # Rename serverTimestamp -> timestamp
         # --------------------------------------------------------------
-        if "serverTimestamp" in event:
-            event["timestamp"] = event["serverTimestamp"]
-            del event["serverTimestamp"]
+        #if "serverTimestamp" in event:
+        #    event["timestamp"] = event["serverTimestamp"]
+        #    del event["serverTimestamp"]
 
-        # --------------------------------------------------------------
-        # Convert specific details timestamps (epoch -> ISO)
-        # --------------------------------------------------------------
         details = event.get("details")
         if not isinstance(details, dict):
             continue
 
-        # Convertir SOLO los campos solicitados
+        # --------------------------------------------------------------
+        # Timestamp normalization
+        # --------------------------------------------------------------
         if "clientTimestamp" in details:
             details["clientTimestamp"] = _epoch_to_iso(
                 details["clientTimestamp"]
@@ -120,6 +125,19 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         if "systemDataTimeCreated" in details:
             details["systemDataTimeCreated"] = _epoch_to_iso(
                 details["systemDataTimeCreated"]
+            )
+
+        # --------------------------------------------------------------
+        # Semantic normalization
+        # --------------------------------------------------------------
+        if "categories" in details:
+            details["categories"] = normalize_categories(
+                details["categories"]
+            )
+
+        if "risk" in details:
+            details["risk"] = normalize_risk(
+                details["risk"]
             )
 
     return items, payload.get("nextAnchor")
