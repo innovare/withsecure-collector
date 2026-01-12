@@ -1,0 +1,35 @@
+{
+  "index_patterns": ["wazuh-alerts-*"],
+  "priority": 1000,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "index.default_pipeline": "wazuh-date-pipeline"
+    },
+    "mappings": {
+      "dynamic": true,
+      "properties": {
+        "manager": {
+          "properties": {
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "data": {
+          "properties": {
+            "serverTimestamp": {
+              "type": "date"
+            }
+          }
+        }
+      }
+    }
+  }
+}

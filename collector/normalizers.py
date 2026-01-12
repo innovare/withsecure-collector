@@ -19,6 +19,10 @@ CATEGORY_MAP = {
     "CC_NETWORK_CONNECTION": "Comando y Control",
     "ABNORMAL_NETWORK_CONNECTION": "Conexión de Red Anormal",
     "MALWARE": "Malware",
+    "PERSISTENCE": "Persistencia",
+    "CHANGING_SECURITY_SETTINGS": "Cambio de configuración de seguridad",
+    "PRIVILEGE_ESCALATION": "Escalamiento de privilegios",
+    "ABNORMAL_PROCESS_EXECUTION": "Ejecución de procesos anormal",
 }
 
 
@@ -40,6 +44,7 @@ def normalize_categories(value):
 # Risk normalization (WithSecure -> Español)
 # ----------------------------------------------------------------------
 RISK_MAP = {
+    "CRITICAL": "Crítico",
     "HIGH": "Alto",
     "MEDIUM": "Medio",
     "LOW": "Bajo",

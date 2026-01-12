@@ -1,0 +1,15 @@
+Limpiar logs
+
+curl -k -u admin:admin -X DELETE "https://localhost:9200/wazuh-*"
+
+
+curl -k -u admin:admin \
+-X PUT https://localhost:9200/_ingest/pipeline/withsecure-server-timestamp \
+-H "Content-Type: application/json" \
+-d @pipeline_withsecure.json
+
+
+curl -k -u admin:admin \
+-X PUT https://localhost:9200/_index_template/wazuh-withsecure-template \
+-H "Content-Type: application/json" \
+-d @template_withsecure.json

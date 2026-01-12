@@ -1,0 +1,13 @@
+{
+  "description": "Re-tipado de serverTimeStamp a date para Wazuh",
+  "processors": [
+    {
+      "date": {
+        "field": "serverTimeStamp",
+        "target_field": "serverTimeStamp",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    }
+  ]
+}

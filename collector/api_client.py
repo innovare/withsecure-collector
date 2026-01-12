@@ -8,6 +8,8 @@
 # - Normaliza details.categories
 # - Normaliza details.risk
 # - Externaliza normalización a collector.normalizers
+# Client 'congreso' failed: Event fetch failed: {"message":"Unauthorized.","code":401000,"transactionId":"0000-cfe5f5193e6a4d74"}
+
 
 import logging
 import requests

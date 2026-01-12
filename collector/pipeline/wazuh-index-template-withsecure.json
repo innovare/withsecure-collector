@@ -1,0 +1,17 @@
+{
+  "index_patterns": ["wazuh-alerts-4.x-*"],
+  "priority": 200,
+  "template": {
+    "mappings": {
+      "properties": {
+        "data": {
+          "properties": {
+            "serverTimestamp": {
+              "type": "date"
+            }
+          }
+        }
+      }
+    }
+  }
+}
