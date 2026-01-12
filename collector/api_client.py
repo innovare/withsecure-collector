@@ -1,15 +1,11 @@
 # collector/api_client.py
-# VERSION: v1.3.7
+# VERSION: v1.3.8
 #
-# FIX:
-# - Renombra serverTimestamp -> timestamp
-# - Convierte details.clientTimestamp y details.systemDataTimeCreated (epoch -> ISO)
-# - Añade vendor="WithSecure"
-# - Normaliza details.categories
-# - Normaliza details.risk
-# - Externaliza normalización a collector.normalizers
-# Client 'congreso' failed: Event fetch failed: {"message":"Unauthorized.","code":401000,"transactionId":"0000-cfe5f5193e6a4d74"}
-
+# CHANGE:
+# - Agrupa todos los campos del evento bajo "withsecure"
+# - Mantiene vendor en top-level
+# - Compatible con Wazuh JSON native decoding
+#
 
 import logging
 import requests
@@ -30,10 +26,6 @@ EVENTS_PATH = "/security-events/v1/security-events"
 # Helper: epoch (int | float | numeric str) -> ISO 8601
 # ----------------------------------------------------------------------
 def _epoch_to_iso(value):
-    """
-    Convierte epoch (segundos o milisegundos) a ISO 8601 UTC.
-    Acepta int, float o string numérico.
-    """
     try:
         if isinstance(value, str):
             if not value.isdigit():
@@ -98,48 +90,48 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
     payload = resp.json()
     items = payload.get("items", [])
 
+    output_events = []
+
     # ------------------------------------------------------------------
-    # ENRICHMENT
+    # ENRICHMENT + REPACK
     # ------------------------------------------------------------------
     for event in items:
-        # Vendor
-        event["vendor"] = "WithSecure"
-
-        # --------------------------------------------------------------
-        # Rename serverTimestamp -> timestamp
-        # --------------------------------------------------------------
-        #if "serverTimestamp" in event:
-        #    event["timestamp"] = event["serverTimestamp"]
-        #    del event["serverTimestamp"]
-
         details = event.get("details")
-        if not isinstance(details, dict):
-            continue
+        if isinstance(details, dict):
+
+            # Timestamp normalization
+            if "clientTimestamp" in details:
+                details["clientTimestamp"] = _epoch_to_iso(
+                    details["clientTimestamp"]
+                )
+
+            if "systemDataTimeCreated" in details:
+                details["systemDataTimeCreated"] = _epoch_to_iso(
+                    details["systemDataTimeCreated"]
+                )
+
+            # Semantic normalization
+            if "categories" in details:
+                details["categories"] = normalize_categories(
+                    details["categories"]
+                )
+
+            if "risk" in details:
+                details["risk"] = normalize_risk(
+                    details["risk"]
+                )
 
         # --------------------------------------------------------------
-        # Timestamp normalization
+        # FINAL STRUCTURE (SIEM-SAFE)
         # --------------------------------------------------------------
-        if "clientTimestamp" in details:
-            details["clientTimestamp"] = _epoch_to_iso(
-                details["clientTimestamp"]
-            )
+        wrapped_event = {
+            "vendor": "WithSecure",
+            "withsecure": event
+        }
 
-        if "systemDataTimeCreated" in details:
-            details["systemDataTimeCreated"] = _epoch_to_iso(
-                details["systemDataTimeCreated"]
-            )
+        # Evitar duplicar vendor dentro del objeto
+        wrapped_event["withsecure"].pop("vendor", None)
 
-        # --------------------------------------------------------------
-        # Semantic normalization
-        # --------------------------------------------------------------
-        if "categories" in details:
-            details["categories"] = normalize_categories(
-                details["categories"]
-            )
+        output_events.append(wrapped_event)
 
-        if "risk" in details:
-            details["risk"] = normalize_risk(
-                details["risk"]
-            )
-
-    return items, payload.get("nextAnchor")
+    return output_events, payload.get("nextAnchor")

@@ -1,7 +1,5 @@
 <!-- ID: 7770 - 77750 -->
 
-<group name="withsecure,">
-
 <!--
     Lista con cada valor del campo "engine" y código asignado:	
 
@@ -41,6 +39,9 @@
     77732	xmRecommendation
 
 -->
+
+<group name="withsecure,">
+
     <rule id="77700" level="0">
         <decoded_as>json</decoded_as>
         <field name="vendor">WithSecure</field>

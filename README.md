@@ -48,6 +48,13 @@ withsecure-collector/
 │   └── withsecure-collector.service
 └── README.md
 
+--
+## Permisos
+
+```text
+- #mkdir /opt/innovare/withsecure-collector/event
+- #chown root.wazuh  /opt/innovare/withsecure-collector/events
+
 ---
 
 ## Descarga y Ejecución
