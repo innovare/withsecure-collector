@@ -1,16 +1,14 @@
 # collector/main.py
-# VERSION: v1.3.1
+# VERSION: v1.3.2
 #
-# CHANGELOG:
-# - NEW: start_mode por cliente (state | now | fixed)
-# - NEW: start_date soportado con hot-reload
-# - Mantiene scheduler cooperativo
-# - Mantiene rate-limit por tenant
-# - NO rompe state ni paginación
-# - Compatible con graceful shutdown
+# FIXES:
+# - Corrige avance de last_ts leyendo persistenceTimestamp real
+# - Protección contra timestamps repetidos
+# - Compatible con exclusiveStart=true (API WithSecure)
+# - Mantiene state, anchor y paginación
+# - Comentarios explicativos incluidos
 
 import time
-import json
 import logging
 import signal
 from datetime import datetime, timezone
@@ -32,7 +30,7 @@ log = logging.getLogger(__name__)
 CONFIG_PATH = Path("config.yml")
 
 # --------------------------------------------------------------------
-# Graceful shutdown flag
+# Graceful shutdown
 # --------------------------------------------------------------------
 shutdown_requested = False
 
@@ -51,6 +49,7 @@ signal.signal(signal.SIGTERM, handle_shutdown)
 # Helpers
 # --------------------------------------------------------------------
 def utc_now_iso():
+    """Devuelve timestamp ISO UTC"""
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 # --------------------------------------------------------------------
@@ -60,7 +59,7 @@ def main():
     log.info("WithSecure Events Collector started")
 
     # ------------------------------------------------------------
-    # Scheduler state (IN-MEMORY)
+    # Scheduler en memoria por cliente
     # ------------------------------------------------------------
     sched = {}
     last_config_mtime = None
@@ -70,7 +69,7 @@ def main():
         now = time.monotonic()
 
         # ========================================================
-        # HOT-RELOAD CONFIG
+        # HOT-RELOAD config.yml
         # ========================================================
         try:
             mtime = CONFIG_PATH.stat().st_mtime
@@ -84,6 +83,7 @@ def main():
             config = load_config()
             last_config_mtime = mtime
 
+            # Inicializa estructura por cliente
             for client in config["clients"]:
                 name = client["name"]
                 if name not in sched:
@@ -94,15 +94,12 @@ def main():
                             client["client_secret"]
                         ),
                         "rate_limit_until": 0.0,
-
-                        # -----------------------------------------
-                        # NEW: flag para aplicar start_mode una sola vez
-                        # -----------------------------------------
+                        # start_mode se aplica SOLO una vez
                         "start_initialized": False,
                     }
 
         # ========================================================
-        # SELECT NEXT CLIENT
+        # Selección de cliente listo para ejecutar
         # ========================================================
         next_client = None
         next_time = None
@@ -121,16 +118,16 @@ def main():
             continue
 
         # ========================================================
-        # EXECUTE CLIENT
+        # Ejecución del cliente
         # ========================================================
         name = next_client["name"]
         interval = next_client["interval"]
 
         log.info("Processing client: '%s'", name)
 
-        # -----------------------------
-        # Rate-limit per tenant
-        # -----------------------------
+        # --------------------------------------------------------
+        # Rate-limit por cliente
+        # --------------------------------------------------------
         if sched[name]["rate_limit_until"] > now:
             sched[name]["next_run"] = sched[name]["rate_limit_until"]
             continue
@@ -138,7 +135,7 @@ def main():
         state = load_state(name)
 
         # ========================================================
-        # NEW: start_mode resolution (ONCE per process or reload)
+        # start_mode (solo la primera vez)
         # ========================================================
         if not sched[name]["start_initialized"]:
             mode = next_client.get("start_mode", "state")
@@ -159,16 +156,25 @@ def main():
                 last_ts = utc_now_iso()
                 log.warning("start_mode fallback to now")
 
-            sched[name]["start_initialized"] = True
             anchor = None
+            sched[name]["start_initialized"] = True
 
         else:
             last_ts = state.get("last_ts", utc_now_iso())
             anchor = state.get("anchor")
 
+        # ========================================================
+        # Variables de control
+        # ========================================================
         total_events = 0
         page = 0
         last_event_ts = last_ts
+
+        # --------------------------------------------------------
+        # PROTECCIÓN:
+        # Guarda último timestamp procesado para evitar loops
+        # --------------------------------------------------------
+        last_seen_ts = last_ts
 
         try:
             while True:
@@ -184,15 +190,39 @@ def main():
                 if not items:
                     break
 
+                # --------------------------------------------------
+                # Orden defensivo por timestamp (API puede variar)
+                # --------------------------------------------------
+                items.sort(
+                    key=lambda e: e.get("withsecure", {}).get(
+                        "persistenceTimestamp", ""
+                    )
+                )
+
                 save_events(name, items)
 
                 for ev in items:
                     total_events += 1
 
+                    # --------------------------------------------------
+                    # LECTURA CORRECTA DEL TIMESTAMP REAL
+                    # --------------------------------------------------
                     ws = ev.get("withsecure", {})
                     ts = ws.get("persistenceTimestamp")
 
-                    if ts:
+                    if not ts:
+                        continue
+
+                    # --------------------------------------------------
+                    # PROTECCIÓN CONTRA TIMESTAMPS REPETIDOS
+                    #
+                    # WithSecure usa exclusiveStart=true:
+                    # - persistenceTimestampStart es EXCLUSIVO
+                    # - Si enviamos el mismo ts, el API devuelve lo mismo
+                    #
+                    # Por eso SOLO avanzamos si el timestamp AUMENTA
+                    # --------------------------------------------------
+                    if ts > last_event_ts:
                         last_event_ts = ts
 
                 if not next_anchor:
@@ -206,11 +236,11 @@ def main():
                 sched[name]["rate_limit_until"] = now + interval
                 log.warning("Rate-limit detected for %s", name)
             else:
-                log.error("  - Client '%s' failed: %s", name, msg)
+                log.error("Client '%s' failed: %s", name, msg)
 
-        # -----------------------------
-        # SAVE STATE ALWAYS
-        # -----------------------------
+        # ========================================================
+        # Guardar estado SIEMPRE
+        # ========================================================
         save_state(
             name,
             {
@@ -222,7 +252,7 @@ def main():
         sched[name]["next_run"] = now + interval
 
         log.info(
-            "  - Polling for %s finished. events=%s pages=%s last_ts=%s",
+            "Polling finished for %s | events=%s pages=%s last_ts=%s",
             name,
             total_events,
             page,
@@ -230,14 +260,11 @@ def main():
         )
 
         log.info(
-            "  - Next polling: %s in %s seconds.",
+            "Next polling for %s in %s seconds",
             name,
             interval
         )
 
-    # ============================================================
-    # FINAL SHUTDOWN
-    # ============================================================
     log.warning("Collector stopped gracefully")
 
 # --------------------------------------------------------------------

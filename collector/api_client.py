@@ -26,25 +26,52 @@ EVENTS_PATH = "/security-events/v1/security-events"
 # Helper: epoch (int | float | numeric str) -> ISO 8601 UTC
 # ----------------------------------------------------------------------
 def _epoch_to_iso(value):
+    """
+    Normaliza timestamps para SIEM.
+    Acepta:
+      - epoch (segundos o ms)
+      - ISO 8601 con Z
+      - ISO 8601 con offset
+    Devuelve:
+      YYYY-MM-DDTHH:MM:SS.mmm+0000
+    """
     try:
-        if isinstance(value, str):
-            if not value.isdigit():
-                return value
+        # --------------------------------------------------
+        # Epoch (int / float / numeric str)
+        # --------------------------------------------------
+        if isinstance(value, (int, float)) or (
+            isinstance(value, str) and value.isdigit()
+        ):
             value = int(value)
+            if value > 1_000_000_000_000:
+                dt = datetime.fromtimestamp(value / 1000, tz=timezone.utc)
+            else:
+                dt = datetime.fromtimestamp(value, tz=timezone.utc)
 
-        if not isinstance(value, (int, float)):
-            return value
+            return dt.strftime("%Y-%m-%dT%H:%M:%S.%f+0000")
 
-        # Detect milliseconds
-        if value > 1_000_000_000_000:
-            dt = datetime.fromtimestamp(value / 1000, tz=timezone.utc)
-        else:
-            dt = datetime.fromtimestamp(value, tz=timezone.utc)
+        # --------------------------------------------------
+        # ISO string
+        # --------------------------------------------------
+        if isinstance(value, str):
+            # Caso ISO terminado en Z
+            if value.endswith("Z"):
+                return value[:-1] + "+0000"
 
-        return dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            # Caso ISO con offset (+00:00, +0000, etc.)
+            try:
+                dt = datetime.fromisoformat(
+                    value.replace("Z", "+00:00")
+                )
+                dt = dt.astimezone(timezone.utc)
+                return dt.strftime("%Y-%m-%dT%H:%M:%S.%f+0000")
+            except ValueError:
+                return value
+
+        return value
 
     except Exception as e:
-        log.debug("Epoch conversion failed (%s): %s", value, e)
+        log.debug("Timestamp conversion failed (%s): %s", value, e)
         return value
 
 
@@ -100,7 +127,28 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         # Convert epoch timestamps inside details
         # --------------------------------------------------------------
         details = event.get("details")
+        
+        if "serverTimestamp" in event:
+            event["serverTimestamp"] = _epoch_to_iso(
+                event["serverTimestamp"]
+            )
+            
+        if "clientTimestamp" in event:
+            event["clientTimestamp"] = _epoch_to_iso(
+                event["clientTimestamp"]
+            )
+                                    
         if isinstance(details, dict):
+            if "created" in details:
+                details["created"] = _epoch_to_iso(
+                    details["created"]
+                )
+                
+            if "modified" in details:
+                details["modified"] = _epoch_to_iso(
+                    details["modified"]
+                )
+                           
             if "clientTimestamp" in details:
                 details["clientTimestamp"] = _epoch_to_iso(
                     details["clientTimestamp"]
