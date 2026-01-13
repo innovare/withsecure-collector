@@ -18,3 +18,5 @@ systemctl restart wazuh-manager
 # Añadir mapping
 curl -k -u admin:admin -X PUT https://localhost:9200/_index_template/wazuh-withsecure-template -H "Content-Type: application/json" -d @wazuh-siem-safe-withsecure.json
 
+# Localtime
+sudo timedatectl set-timezone America/Bogota

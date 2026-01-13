@@ -57,6 +57,85 @@ withsecure-collector/
 
 ---
 
+### config.yml
+
+```text
+
+clients:
+  - name: innovare
+    client_id: xxxx
+    client_secret: yyyy
+    interval: 300
+    output_log: output/innovare.log
+    rate_limit_per_minute: 60
+    start_mode: fixed
+    start_date: "2025-01-01T00:00:00.000Z"
+
+## start_mode define desde qué timestamp inicial el collector empieza a leer eventos cuando arranca el proceso o cuando se añade un cliente nuevo.
+
+Importante:
+start_mode solo se aplica una vez por cliente y por ejecución (o tras hot-reload si el cliente es nuevo).
+Luego, siempre manda el state guardado.
+
+start_mode: state (DEFAULT – recomendado)
+Qué hace
+Lee desde state/<cliente>.json
+
+Si no existe state → usa now
+Cuándo usarlo
+- Producción normal
+- Evitar duplicados
+- Continuidad garantizada
+
+Qué hace
+- Lee desde state/<cliente>.json
+- Si no existe state → usa now
+
+Cuándo usarlo
+- Producción normal
+- Evitar duplicados
+- Continuidad garantizada
+
+start_mode: now
+Qué hace
+- Ignora completamente el state
+- Empieza desde el momento exacto de arranque
+
+Cuándo usarlo
+- Alta de cliente nueva
+- No quieres eventos históricos
+- Pruebas / PoC
+
+start_mode: fixed
+Qué hace
+- Empieza desde una fecha fija (RFC3339)
+- Ideal para replay histórico
+
+Cuándo usarlo
+- Backfill
+- Migraciones
+- Carga inicial de SIEM
+- Auditorías
+
+Configuración
+clients:
+  - name: innovare
+    client_id: xxx
+    client_secret: yyy
+    interval: 300
+    output_log: output/innovare.log
+    start_mode: fixed
+    start_date: "2025-01-01T00:00:00.000Z"
+
+Recomendación operativa
+Entorno	start_mode
+Producción	state
+Alta cliente	now
+Backfill	fixed
+PoC	now
+
+---
+
 ## Descarga y Ejecución
 
 ```text

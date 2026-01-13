@@ -6,6 +6,8 @@ clients:
     scope: "connect.api.read"
     interval: 15
     rate_limit_per_minute: 30
+    start_mode: fixed
+    start_date: "2025-11-01T00:00:00Z"
 
   - name: "customer"
     organization_id: ""
@@ -14,3 +16,4 @@ clients:
     scope: "connect.api.read"
     interval: 30
     rate_limit_per_minute: 60 # (si no existe se asume 60 x minuto)
+    start_mode: state

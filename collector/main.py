@@ -1,12 +1,13 @@
 # collector/main.py
-# VERSION: v1.3.0
+# VERSION: v1.3.1
 #
 # CHANGELOG:
-# - Graceful shutdown (SIGINT / SIGTERM)
-# - Guarda state antes de salir
-# - No interrumpe cliente en ejecución
-# - Compatible con scheduler cooperativo
-# - Mantiene hot-reload y rate-limit
+# - NEW: start_mode por cliente (state | now | fixed)
+# - NEW: start_date soportado con hot-reload
+# - Mantiene scheduler cooperativo
+# - Mantiene rate-limit por tenant
+# - NO rompe state ni paginación
+# - Compatible con graceful shutdown
 
 import time
 import json
@@ -93,6 +94,11 @@ def main():
                             client["client_secret"]
                         ),
                         "rate_limit_until": 0.0,
+
+                        # -----------------------------------------
+                        # NEW: flag para aplicar start_mode una sola vez
+                        # -----------------------------------------
+                        "start_initialized": False,
                     }
 
         # ========================================================
@@ -130,8 +136,35 @@ def main():
             continue
 
         state = load_state(name)
-        last_ts = state.get("last_ts", utc_now_iso())
-        anchor = state.get("anchor")
+
+        # ========================================================
+        # NEW: start_mode resolution (ONCE per process or reload)
+        # ========================================================
+        if not sched[name]["start_initialized"]:
+            mode = next_client.get("start_mode", "state")
+
+            if mode == "state" and "last_ts" in state:
+                last_ts = state["last_ts"]
+                log.debug("start_mode=state last_ts=%s", last_ts)
+
+            elif mode == "now":
+                last_ts = utc_now_iso()
+                log.info("start_mode=now starting at %s", last_ts)
+
+            elif mode == "fixed":
+                last_ts = next_client["start_date"]
+                log.info("start_mode=fixed starting at %s", last_ts)
+
+            else:
+                last_ts = utc_now_iso()
+                log.warning("start_mode fallback to now")
+
+            sched[name]["start_initialized"] = True
+            anchor = None
+
+        else:
+            last_ts = state.get("last_ts", utc_now_iso())
+            anchor = state.get("anchor")
 
         total_events = 0
         page = 0
@@ -155,7 +188,12 @@ def main():
 
                 for ev in items:
                     total_events += 1
-                    last_event_ts = ev.get("persistenceTimestamp", last_event_ts)
+
+                    ws = ev.get("withsecure", {})
+                    ts = ws.get("persistenceTimestamp")
+
+                    if ts:
+                        last_event_ts = ts
 
                 if not next_anchor:
                     break
@@ -184,7 +222,7 @@ def main():
         sched[name]["next_run"] = now + interval
 
         log.info(
-            "  - Polling for : %s finished. events=%s pages=%s last_ts=%s",
+            "  - Polling for %s finished. events=%s pages=%s last_ts=%s",
             name,
             total_events,
             page,

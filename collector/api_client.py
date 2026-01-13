@@ -1,20 +1,20 @@
 # collector/api_client.py
-# VERSION: v1.3.8
+# VERSION: v1.4.0
 #
-# CHANGE:
-# - Agrupa todos los campos del evento bajo "withsecure"
-# - Mantiene vendor en top-level
-# - Compatible con Wazuh JSON native decoding
-#
+# CHANGELOG:
+# - Envuelve el evento original en estructura:
+#   {
+#       "vendor": "withsecure",
+#       "withsecure": <evento_original>
+#   }
+# - Mantiene conversión de timestamps epoch -> ISO
+# - Mantiene rename serverTimestamp -> timestamp
+# - No altera paginación ni state
+# - Compatible con Wazuh / OpenSearch / SIEMs
 
 import logging
 import requests
-from datetime import datetime, timezone
-
-from collector.normalizers import (
-    normalize_categories,
-    normalize_risk
-)
+from datetime import datetime, timezone, timedelta
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ EVENTS_PATH = "/security-events/v1/security-events"
 
 
 # ----------------------------------------------------------------------
-# Helper: epoch (int | float | numeric str) -> ISO 8601
+# Helper: epoch (int | float | numeric str) -> ISO 8601 UTC
 # ----------------------------------------------------------------------
 def _epoch_to_iso(value):
     try:
@@ -35,6 +35,7 @@ def _epoch_to_iso(value):
         if not isinstance(value, (int, float)):
             return value
 
+        # Detect milliseconds
         if value > 1_000_000_000_000:
             dt = datetime.fromtimestamp(value / 1000, tz=timezone.utc)
         else:
@@ -48,7 +49,7 @@ def _epoch_to_iso(value):
 
 
 # ----------------------------------------------------------------------
-# API
+# Fetch events
 # ----------------------------------------------------------------------
 def fetch_events(auth, last_ts, anchor=None, org_id=None):
     token = auth.authenticate()
@@ -61,7 +62,7 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
     }
 
     if not last_ts:
-        last_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        last_ts = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     params = {
         "limit": 200,
@@ -69,7 +70,6 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         "persistenceTimestampStart": last_ts,
         "order": "asc",
         "exclusiveStart": "true",
-        "language": "es-MX",
     }
 
     if anchor:
@@ -88,18 +88,19 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         raise RuntimeError(f"Event fetch failed: {resp.text}")
 
     payload = resp.json()
-    items = payload.get("items", [])
+    raw_items = payload.get("items", [])
 
-    output_events = []
+    wrapped_items = []
 
     # ------------------------------------------------------------------
-    # ENRICHMENT + REPACK
+    # NORMALIZATION + WRAPPING
     # ------------------------------------------------------------------
-    for event in items:
+    for event in raw_items:
+        # --------------------------------------------------------------
+        # Convert epoch timestamps inside details
+        # --------------------------------------------------------------
         details = event.get("details")
         if isinstance(details, dict):
-
-            # Timestamp normalization
             if "clientTimestamp" in details:
                 details["clientTimestamp"] = _epoch_to_iso(
                     details["clientTimestamp"]
@@ -110,28 +111,12 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
                     details["systemDataTimeCreated"]
                 )
 
-            # Semantic normalization
-            if "categories" in details:
-                details["categories"] = normalize_categories(
-                    details["categories"]
-                )
-
-            if "risk" in details:
-                details["risk"] = normalize_risk(
-                    details["risk"]
-                )
-
         # --------------------------------------------------------------
-        # FINAL STRUCTURE (SIEM-SAFE)
+        # FINAL WRAP (REQUESTED FORMAT)
         # --------------------------------------------------------------
-        wrapped_event = {
-            "vendor": "WithSecure",
+        wrapped_items.append({
+            "vendor": "withsecure",
             "withsecure": event
-        }
+        })
 
-        # Evitar duplicar vendor dentro del objeto
-        wrapped_event["withsecure"].pop("vendor", None)
-
-        output_events.append(wrapped_event)
-
-    return output_events, payload.get("nextAnchor")
+    return wrapped_items, payload.get("nextAnchor")
