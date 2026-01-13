@@ -44,7 +44,7 @@
 
     <rule id="77700" level="0">
         <decoded_as>json</decoded_as>
-        <field name="vendor">WithSecure</field>
+        <field name="vendor">withsecure</field>
         <description>WithSecure Elements events.</description>
         <options>no_full_log</options>
     </rule>
