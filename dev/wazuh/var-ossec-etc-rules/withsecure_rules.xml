@@ -37,6 +37,7 @@
     77730	webTrafficScanning
     77731	xFence
     77732	xmRecommendation
+    77733   manualScanning
 
 -->
 
@@ -269,6 +270,13 @@
     <rule id="77732" level="3">
         <if_sid>77700</if_sid>
         <field name="withsecure.engine">^xmRecommendation$</field>
+        <description>WithSecure: $(withsecure.message)</description>
+        <options>no_full_log</options>
+    </rule>
+
+    <rule id="77733" level="3">
+        <if_sid>77700</if_sid>
+        <field name="withsecure.engine">^manualScanning$</field>
         <description>WithSecure: $(withsecure.message)</description>
         <options>no_full_log</options>
     </rule>

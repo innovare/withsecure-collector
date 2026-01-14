@@ -16,7 +16,16 @@ systemctl restart wazuh-manager
 /var/ossec/bin/wazuh-analysisd -t
 
 # Añadir mapping
-curl -k -u admin:admin -X PUT https://localhost:9200/_index_template/wazuh-withsecure-template -H "Content-Type: application/json" -d @wazuh-siem-safe-withsecure.json
+curl -k -u admin:admin -X PUT https://localhost:9200/_index_template/wazuh-alerts-withsecure -H "Content-Type: application/json" -d @wazuh-alerts-withsecure-template.json
 
 # Localtime
 sudo timedatectl set-timezone America/Bogota
+
+# test EICAR AMSI
+powershell echo '"X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"'
+
+## Verificar que el INDEX TEMPLATE existe (lo primero)
+curl -k -u admin:admin \
+https://localhost:9200/_index_template/wazuh-alerts-withsecure?pretty
+
+

@@ -1,0 +1,172 @@
+{
+  "index_patterns": ["wazuh-alerts-*"],
+  "priority": 250,
+  "template": {
+    "mappings": {
+      "properties": {
+        "withsecure": {
+          "properties": {
+            "acknowledged": { "type": "keyword" },
+            "action": { "type": "keyword" },
+
+            "clientTimestamp": {
+              "type": "date",
+              "format": "strict_date_optional_time||epoch_millis"
+            },
+
+            "description": { "type": "keyword" },
+
+            "details": {
+              "properties": {
+                "accessFlags": { "type": "keyword" },
+                "accessOperation": { "type": "keyword" },
+                "accessorHash": { "type": "keyword" },
+                "accessorPath": { "type": "keyword" },
+                "action": { "type": "keyword" },
+                "actionType": { "type": "keyword" },
+                "alertType": { "type": "keyword" },
+                "appName": { "type": "keyword" },
+                "appliedRule": { "type": "keyword" },
+                "availableActions": { "type": "keyword" },
+                "categories": { "type": "keyword" },
+
+                "clientTimestamp": {
+                  "type": "date",
+                  "format": "strict_date_optional_time||epoch_millis"
+                },
+
+                "command": { "type": "keyword" },
+                "commandLine": { "type": "keyword" },
+                "connectionDestinationIp": { "type": "keyword" },
+                "connectionDestinationPort": { "type": "keyword" },
+                "connectionProtocol": { "type": "keyword" },
+                "container": { "type": "keyword" },
+                "containerMailbox": { "type": "keyword" },
+                "containerSha1": { "type": "keyword" },
+                "containerSize": { "type": "keyword" },
+                "contentType": { "type": "keyword" },
+                "created": { "type": "keyword" },
+                "creator": { "type": "keyword" },
+                "creatorSha1": { "type": "keyword" },
+                "description": { "type": "keyword" },
+                "detection": { "type": "keyword" },
+                "deviceId": { "type": "keyword" },
+                "deviceName": { "type": "keyword" },
+                "devicePath": { "type": "keyword" },
+                "direction": { "type": "keyword" },
+                "errorMessage": { "type": "keyword" },
+                "eventXml": { "type": "keyword" },
+                "exploit": { "type": "keyword" },
+                "filePath": { "type": "keyword" },
+                "fileScanningType": { "type": "keyword" },
+                "fingerprint": { "type": "keyword" },
+                "hostIpAddress": { "type": "keyword" },
+                "incidentId": { "type": "keyword" },
+                "incidentPublicId": { "type": "keyword" },
+                "infectionName": { "type": "keyword" },
+                "infectionType": { "type": "keyword" },
+
+                "initialDetectionTimestamp": {
+                  "type": "date",
+                  "format": "strict_date_optional_time||epoch_millis"
+                },
+
+                "initiator": { "type": "keyword" },
+                "initiatorCertificateHash": { "type": "keyword" },
+                "initiatorHash": { "type": "keyword" },
+                "initiatorSignerName": { "type": "keyword" },
+                "ip": { "type": "keyword" },
+                "mergedTo": { "type": "keyword" },
+                "modified": { "type": "keyword" },
+                "name": { "type": "keyword" },
+                "object": { "type": "keyword" },
+                "parentCommandLine": { "type": "keyword" },
+                "parentPath": { "type": "keyword" },
+                "parentPrevalence": { "type": "keyword" },
+                "parentReputation": { "type": "keyword" },
+                "path": { "type": "keyword" },
+                "port": { "type": "keyword" },
+                "prevalence": { "type": "keyword" },
+                "process": { "type": "keyword" },
+                "profileId": { "type": "keyword" },
+                "profileName": { "type": "keyword" },
+                "profileVersion": { "type": "keyword" },
+                "quarantineId": { "type": "keyword" },
+                "rarity": { "type": "keyword" },
+                "readOnly": { "type": "keyword" },
+                "reason": { "type": "keyword" },
+                "rebootRequiredToDelete": { "type": "keyword" },
+                "recommendedAction": { "type": "keyword" },
+                "reputation": { "type": "keyword" },
+                "requestType": { "type": "keyword" },
+                "resolution": { "type": "keyword" },
+                "risk": { "type": "keyword" },
+                "ruleEvent": { "type": "keyword" },
+                "ruleId": { "type": "keyword" },
+                "ruleName": { "type": "keyword" },
+                "safety": { "type": "keyword" },
+                "scanOnClose": { "type": "keyword" },
+                "sha1": { "type": "keyword" },
+                "size": { "type": "keyword" },
+
+                "systemDataTimeCreated": {
+                  "type": "date",
+                  "format": "strict_date_optional_time||epoch_millis"
+                },
+
+                "systemWide": { "type": "keyword" },
+                "target": { "type": "keyword" },
+                "targetCommandLine": { "type": "keyword" },
+                "targetPath": { "type": "keyword" },
+                "throttledCount": { "type": "keyword" },
+                "url": { "type": "keyword" },
+                "userName": { "type": "keyword" }
+              }
+            },
+
+            "device": {
+              "properties": {
+                "id": { "type": "keyword" },
+                "labels": { "type": "keyword" },
+                "name": { "type": "keyword" }
+              }
+            },
+
+            "engine": { "type": "keyword" },
+            "eventTransactionId": { "type": "keyword" },
+            "id": { "type": "keyword" },
+            "message": { "type": "keyword" },
+
+            "organization": {
+              "properties": {
+                "id": { "type": "keyword" },
+                "name": { "type": "keyword" }
+              }
+            },
+
+            "persistenceTimestamp": {
+              "type": "date",
+              "format": "strict_date_optional_time||epoch_millis"
+            },
+
+            "serverTimestamp": {
+              "type": "date",
+              "format": "strict_date_optional_time||epoch_millis"
+            },
+
+            "severity": { "type": "keyword" },
+
+            "target": {
+              "properties": {
+                "id": { "type": "keyword" },
+                "name": { "type": "keyword" }
+              }
+            },
+
+            "userName": { "type": "keyword" }
+          }
+        }
+      }
+    }
+  }
+}

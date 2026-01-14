@@ -14,15 +14,26 @@
 # Category normalization (WithSecure -> Español)
 # ----------------------------------------------------------------------
 CATEGORY_MAP = {
-    "LATERAL_MOVEMENT": "Movimiento Lateral",
+    "ANOMALY": "Anomalía",
+    "ABNORMAL_FILE_ACCESSES": "Accesos anormales al archivo",
+    "ABNORMAL_NETWORK_CONNECTION": "Conexión de red anormal",
+    "ABNORMAL_PROCESS_EXECUTION": "Ejecución anormal del proceso",
+    "ABNORMAL_FILE_MODIFICATION": "Modificación anormal del archivo",
+    "ABNORMAL_LIBRARY_OR_MODULE": "Biblioteca o módulo anormal",
     "CREDENTIAL_THEFT": "Robo de Credenciales",
-    "CC_NETWORK_CONNECTION": "Comando y Control",
-    "ABNORMAL_NETWORK_CONNECTION": "Conexión de Red Anormal",
+    "CC_NETWORK_CONNECTION": "Conexión de red CC",
+    "CHANGING_SECURITY_SETTINGS": "Cambio de la configuración de seguridad",
+    "CHANGING_FILE_VISIBILITY": "Cambio de visibilidad del archivo",
+    "INJECTION_TARGET": "Destino de inyección",
+    "INJECTION": "Inyección"
+    "LATERAL_MOVEMENT": "Movimiento Lateral",
     "MALWARE": "Malware",
     "PERSISTENCE": "Persistencia",
-    "CHANGING_SECURITY_SETTINGS": "Cambio de configuración de seguridad",
     "PRIVILEGE_ESCALATION": "Escalamiento de privilegios",
-    "ABNORMAL_PROCESS_EXECUTION": "Ejecución de procesos anormal",
+    "RECON_ACTIVITIES": "Actividades de reconocimiento",
+    "SCRIPTING_ABUSE": "Abuso de scripting",
+    "SYSTEM_OR_TOOL_MISUSE": "Uso incorrecto del sistema o la herramienta",
+    "SENSOR_TAMPER": "Manipulación de sensor",
 }
 
 
@@ -45,6 +56,7 @@ def normalize_categories(value):
 # ----------------------------------------------------------------------
 RISK_MAP = {
     "CRITICAL": "Crítico",
+    "SEVERE": "Grave",
     "HIGH": "Alto",
     "MEDIUM": "Medio",
     "LOW": "Bajo",
