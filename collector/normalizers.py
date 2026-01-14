@@ -25,7 +25,7 @@ CATEGORY_MAP = {
     "CHANGING_SECURITY_SETTINGS": "Cambio de la configuración de seguridad",
     "CHANGING_FILE_VISIBILITY": "Cambio de visibilidad del archivo",
     "INJECTION_TARGET": "Destino de inyección",
-    "INJECTION": "Inyección"
+    "INJECTION": "Inyección",
     "LATERAL_MOVEMENT": "Movimiento Lateral",
     "MALWARE": "Malware",
     "PERSISTENCE": "Persistencia",
