@@ -1,7 +1,8 @@
 # collector/api_client.py
-# VERSION: v1.4.0
+# VERSION: v1.4.1
 #
 # CHANGELOG:
+# - Se añade normalización de campos categorías EDR y Riesgo
 # - Envuelve el evento original en estructura:
 #   {
 #       "vendor": "withsecure",
@@ -15,6 +16,10 @@
 import logging
 import requests
 from datetime import datetime, timezone, timedelta
+from collector.normalizers import (
+    normalize_categories,
+    normalize_risk
+)
 
 log = logging.getLogger(__name__)
 
@@ -97,6 +102,7 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
         "persistenceTimestampStart": last_ts,
         "order": "asc",
         "exclusiveStart": "true",
+        "language": "es-MX",
     }
 
     if anchor:
@@ -159,6 +165,19 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
                     details["systemDataTimeCreated"]
                 )
 
+            # --------------------------------------------------------------
+            # Semantic normalization
+            # --------------------------------------------------------------
+            if "categories" in details:
+                details["categories"] = normalize_categories(
+                    details["categories"]
+                )
+
+            if "risk" in details:
+                details["risk"] = normalize_risk(
+                    details["risk"]
+                )
+            
         # --------------------------------------------------------------
         # FINAL WRAP (REQUESTED FORMAT)
         # --------------------------------------------------------------

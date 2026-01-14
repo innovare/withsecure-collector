@@ -139,8 +139,7 @@ PoC	now
 ## Descarga y Ejecución
 
 ```text
-- # mkdir /opt/innovare
-- # cd /opt/innovare
+- # mkdir /opt/innovare ; cd /opt/innovare
 - # git clone https://github.com/innovare/withsecure-collector.git
 - # source venv/Scripts/activate
 - # export DEBUG=1 # Sólo si se quiere hacer Debug y DEBUG=0 para desactivar
