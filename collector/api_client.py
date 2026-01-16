@@ -94,7 +94,7 @@ def fetch_events(auth, last_ts, anchor=None, org_id=None):
     }
 
     if not last_ts:
-        last_ts = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        last_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
     params = {
         "limit": 200,

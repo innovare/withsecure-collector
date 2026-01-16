@@ -1,12 +1,11 @@
 # collector/main.py
-# VERSION: v1.3.2
+# VERSION: v1.3.3
 #
-# FIXES:
-# - Corrige avance de last_ts leyendo persistenceTimestamp real
-# - Protección contra timestamps repetidos
-# - Compatible con exclusiveStart=true (API WithSecure)
-# - Mantiene state, anchor y paginación
-# - Comentarios explicativos incluidos
+# FIXES / IMPROVEMENTS:
+# - Inicializa archivos de logs antes del polling (Wazuh-safe)
+# - Refactor menor para mejorar legibilidad
+# - Mantiene protección contra timestamps repetidos
+# - Mantiene state, anchor y exclusiveStart=true
 
 import time
 import logging
@@ -20,6 +19,7 @@ from collector.api_client import fetch_events
 from collector.state import load_state, save_state
 from collector.save_events import save_events
 from collector.config_loader import load_config
+from collector.log_files import ensure_client_log
 
 # --------------------------------------------------------------------
 # Logging
@@ -34,6 +34,7 @@ CONFIG_PATH = Path("config.yml")
 # --------------------------------------------------------------------
 shutdown_requested = False
 
+
 def handle_shutdown(signum, frame):
     global shutdown_requested
     shutdown_requested = True
@@ -41,6 +42,7 @@ def handle_shutdown(signum, frame):
         "Shutdown signal received (%s). Finishing current cycle...",
         signum
     )
+
 
 signal.signal(signal.SIGINT, handle_shutdown)
 signal.signal(signal.SIGTERM, handle_shutdown)
@@ -58,9 +60,7 @@ def utc_now_iso():
 def main():
     log.info("WithSecure Events Collector started")
 
-    # ------------------------------------------------------------
-    # Scheduler en memoria por cliente
-    # ------------------------------------------------------------
+    # Estado del scheduler por cliente
     sched = {}
     last_config_mtime = None
     config = None
@@ -83,10 +83,16 @@ def main():
             config = load_config()
             last_config_mtime = mtime
 
-            # Inicializa estructura por cliente
             for client in config["clients"]:
                 name = client["name"]
+
                 if name not in sched:
+                    # ------------------------------------------------
+                    # Wazuh requirement:
+                    # El archivo debe existir ANTES de escribir eventos
+                    # ------------------------------------------------
+                    ensure_client_log(name)
+
                     sched[name] = {
                         "next_run": 0.0,
                         "auth": WithSecureAuth(
@@ -94,12 +100,11 @@ def main():
                             client["client_secret"]
                         ),
                         "rate_limit_until": 0.0,
-                        # start_mode se aplica SOLO una vez
                         "start_initialized": False,
                     }
 
         # ========================================================
-        # Selección de cliente listo para ejecutar
+        # Seleccionar cliente listo para ejecutar
         # ========================================================
         next_client = None
         next_time = None
@@ -118,16 +123,13 @@ def main():
             continue
 
         # ========================================================
-        # Ejecución del cliente
+        # Ejecutar cliente
         # ========================================================
         name = next_client["name"]
         interval = next_client["interval"]
 
         log.info("Processing client: '%s'", name)
 
-        # --------------------------------------------------------
-        # Rate-limit por cliente
-        # --------------------------------------------------------
         if sched[name]["rate_limit_until"] > now:
             sched[name]["next_run"] = sched[name]["rate_limit_until"]
             continue
@@ -135,14 +137,13 @@ def main():
         state = load_state(name)
 
         # ========================================================
-        # start_mode (solo la primera vez)
+        # start_mode (solo una vez)
         # ========================================================
         if not sched[name]["start_initialized"]:
             mode = next_client.get("start_mode", "state")
 
             if mode == "state" and "last_ts" in state:
                 last_ts = state["last_ts"]
-                log.debug("start_mode=state last_ts=%s", last_ts)
 
             elif mode == "now":
                 last_ts = utc_now_iso()
@@ -163,18 +164,9 @@ def main():
             last_ts = state.get("last_ts", utc_now_iso())
             anchor = state.get("anchor")
 
-        # ========================================================
-        # Variables de control
-        # ========================================================
         total_events = 0
         page = 0
         last_event_ts = last_ts
-
-        # --------------------------------------------------------
-        # PROTECCIÓN:
-        # Guarda último timestamp procesado para evitar loops
-        # --------------------------------------------------------
-        last_seen_ts = last_ts
 
         try:
             while True:
@@ -190,9 +182,6 @@ def main():
                 if not items:
                     break
 
-                # --------------------------------------------------
-                # Orden defensivo por timestamp (API puede variar)
-                # --------------------------------------------------
                 items.sort(
                     key=lambda e: e.get("withsecure", {}).get(
                         "persistenceTimestamp", ""
@@ -202,26 +191,14 @@ def main():
                 save_events(name, items)
 
                 for ev in items:
-                    total_events += 1
-
-                    # --------------------------------------------------
-                    # LECTURA CORRECTA DEL TIMESTAMP REAL
-                    # --------------------------------------------------
                     ws = ev.get("withsecure", {})
                     ts = ws.get("persistenceTimestamp")
 
                     if not ts:
                         continue
 
-                    # --------------------------------------------------
-                    # PROTECCIÓN CONTRA TIMESTAMPS REPETIDOS
-                    #
-                    # WithSecure usa exclusiveStart=true:
-                    # - persistenceTimestampStart es EXCLUSIVO
-                    # - Si enviamos el mismo ts, el API devuelve lo mismo
-                    #
-                    # Por eso SOLO avanzamos si el timestamp AUMENTA
-                    # --------------------------------------------------
+                    total_events += 1
+
                     if ts > last_event_ts:
                         last_event_ts = ts
 
@@ -267,8 +244,6 @@ def main():
 
     log.warning("Collector stopped gracefully")
 
-# --------------------------------------------------------------------
-# ENTRY POINT
-# --------------------------------------------------------------------
+
 if __name__ == "__main__":
     main()

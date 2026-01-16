@@ -77,7 +77,7 @@ Importante:
 start_mode solo se aplica una vez por cliente y por ejecución (o tras hot-reload si el cliente es nuevo).
 Luego, siempre manda el state guardado.
 
-start_mode: state (DEFAULT – recomendado)
+### start_mode: state (DEFAULT – recomendado)
 Qué hace
 Lee desde state/<cliente>.json
 
@@ -96,7 +96,7 @@ Cuándo usarlo
 - Evitar duplicados
 - Continuidad garantizada
 
-start_mode: now
+### start_mode: now
 Qué hace
 - Ignora completamente el state
 - Empieza desde el momento exacto de arranque
@@ -106,7 +106,7 @@ Cuándo usarlo
 - No quieres eventos históricos
 - Pruebas / PoC
 
-start_mode: fixed
+### start_mode: fixed
 Qué hace
 - Empieza desde una fecha fija (RFC3339)
 - Ideal para replay histórico
@@ -140,6 +140,11 @@ PoC	now
 
 ```text
 - # mkdir /opt/innovare ; cd /opt/innovare
+- # chown root:wazuh events
+- # cp dev/wazuh/var-ossec-etc-rules/withsecure_rules.xml /var/ossec/etc/rules/
+- # cp /var/ossec/etc/ossec.conf /var/ossec/etc/ossec.conf.bak
+- # cat dev/wazuh/var-ossec-etc/ossec.conf >> /var/ossec/etc/ossec.conf
+- # systemctl restart wazuh-manager
 - # git clone https://github.com/innovare/withsecure-collector.git
 - # source venv/Scripts/activate
 - # export DEBUG=1 # Sólo si se quiere hacer Debug y DEBUG=0 para desactivar

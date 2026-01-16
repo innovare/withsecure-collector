@@ -4,6 +4,6 @@ output/
 logs/
 state/
 config.yml
-events/
+events/*.log
 *.cfg
 __pycache__/
